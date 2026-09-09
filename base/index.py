@@ -1,13 +1,13 @@
 import os
 import json
-import jsonpickle
+from document import Document
 
 class DocumentIndex:
     """
     Class representing document index
     """
     def __init__(self, file_path):
-        self.file_path = path
+        self.file_path = file_path
         self.index= []
         self.documents= []
         
@@ -31,7 +31,7 @@ class DocumentIndex:
         self.save_index()
     
     def save_index(self):
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(self.file_path, 'w', encoding='utf-8') as f:
             json.dump(self.index, f)
     
     def remove_document(self, document:Document):
@@ -39,7 +39,7 @@ class DocumentIndex:
 
         # Filter list for path to remove
         self.documents[:] = [doc for doc in self.documents if doc.path != document.path]
-        self.index[:] = [r for r in self.index id r["path"] != document.path]
+        self.index[:] = [r for r in self.index if r["path"] != document.path]
         
         if len(self.documents) < start_len:
             self.save_index();

@@ -1,8 +1,10 @@
+import os
+
 class Document:
     """
     Class representing a document
     """
-    def __init__(self, folder, file_name, title, date, num_words, extract, content, format="txt"):
+    def __init__(self, folder, file_name, title, date, num_words, extract, content, extension="txt"):
         """
         Init document class
         """
@@ -15,13 +17,13 @@ class Document:
         self.num_words = num_words
         self.extract = extract
         self.content = content
-        self.format = format
+        self.extension = extension
 
     def to_dict(self):
         """
         Document to dictionary
         """
-        return {"folder":self.folder,"file_name": self.file_name,"path":self.path,"title":self.title, "date":self.date, "num_words":self.num_words, "extract": self.extract, "content" : self.content, "format" : self.format, "dimension" : self.dimension}
+        return {"folder":self.folder,"file_name": self.file_name,"path":self.path,"title":self.title, "date":self.date, "num_words":self.num_words, "extract": self.extract, "content" : self.content, "extension" : self.extension, "dimension" : self.dimension}
     def from_dict(Document, d):
         """
         Create a Document from a dictionary
@@ -34,10 +36,10 @@ class Document:
             num_words=d["num_words"],
             extract=d["extract"],
             content=d["content"],
-            format=d.get("format", "txt") 
+            extension=d.get("extension", "txt") 
         )
     def __repr__(self):
         """
         Print method for document
         """
-        return f"{self.file_name}.{self.format}\n{self.dimension/1024:.2f}KB\nLast modified:{self.date}\nNum words:{self.num_words}\n-----------\n{self.title}\n-----------\n{self.extract}"
+        return f"{self.file_name}.{self.extension}\n{self.dimension/1024:.2f}KB\nLast modified:{self.date}\nNum words:{self.num_words}\n-----------\n{self.title}\n-----------\n{self.extract}"
