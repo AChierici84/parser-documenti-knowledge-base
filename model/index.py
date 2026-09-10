@@ -85,6 +85,11 @@ class DocumentIndex:
         self.documents = []
         self.save_index()
 
+    def update_index(self):
+        for document in self.documents:
+            path = document.path
+             
+
     
 
 
