@@ -1,4 +1,4 @@
-from parser import DocumentParser
+from parser.parser import DocumentParser
 
 class MdParser(DocumentParser):
     """
