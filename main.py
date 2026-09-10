@@ -1,5 +1,46 @@
+import logging
+import logging.config
+import configparser
 from model.index import DocumentIndex
 from utils.UIUtility import UIUtility
+
+def setup_logging(config_file='config.ini'):
+    # read config.ini
+    config = configparser.ConfigParser()
+    config.read(config_file)
+
+    # construct log config
+    log_config = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'standard': {
+                'format': config['logging']['format'],
+                'datefmt': config['logging']['datefmt']
+            },
+        },
+        'handlers': {
+            'file': {
+                'class': 'logging.FileHandler',
+                'filename': config['logging']['file'],
+                'formatter': 'standard',
+                'level': config['logging']['level'],
+            },
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'standard',
+                'level': 'ERROR',  #different lvl for console
+            },
+        },
+        'root': {
+            'handlers': ['file', 'console'],
+            'level': config['logging']['level'],
+        },
+    }
+
+    # Applica la configurazione
+    logging.config.dictConfig(log_config)
+    return logging.getLogger(__name__)
 
 commandList={
   "h": "Menu",
@@ -13,7 +54,7 @@ commandList={
   "8":"Exit",
   }
 
-def main():
+def main(logger):
     index=DocumentIndex()
     UI=UIUtility(commandList)
     cmd=UI.print_intro()
@@ -38,4 +79,5 @@ def main():
     pass
 
 if __name__ == "__main__":
-    main()
+    logger = setup_logging()
+    main(logger)
