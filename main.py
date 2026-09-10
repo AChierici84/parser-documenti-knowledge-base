@@ -48,7 +48,7 @@ def setup_logging(config_file='config.ini'):
             'console': {
                 'class': 'logging.StreamHandler',
                 'formatter': 'standard',
-                'level': 'ERROR',  #different lvl for console
+                'level': 'INFO',  #different lvl for console
             },
         },
         'root': {
@@ -107,7 +107,7 @@ def main(logger: Logger,config_file='config.ini'):
     # read config.ini
     config = configparser.ConfigParser()
     config.read(config_file)
-    index=DocumentIndex(logger,config['index']['file'])
+    index=DocumentIndex(logger,config['index']['index'],config['index']['inverted_index'])
     parsers =get_parsers()
     UI=UIUtility(commandList)
     cmd=UI.print_intro()
