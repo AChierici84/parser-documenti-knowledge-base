@@ -1,15 +1,21 @@
 import os
 import json
+import math
+import re
+import datetime
+from logging import Logger
 from document import Document
+from parser import DocumentParser
 
 class DocumentIndex:
     """
     Class representing document index
     """
-    def __init__(self, file_path):
+    def __init__(self, file_path, logger):
         self.file_path = file_path
         self.index= []
         self.documents= []
+        self.logger = logger
         
         if not os.path.exists(file_path):
             # if not exists, create new index
@@ -28,6 +34,35 @@ class DocumentIndex:
     def add_document(self,document:Document):
         self.documents.append(document)
         self.index.append(document.to_dict())
+        self.save_index()
+
+    def title_from_filename(self, title):
+        """
+        get title from filename
+        """
+        return title.replace("-"," ").replace("_"," ")
+
+    def add_folder(self, folder, parsers: list[DocumentParser],logger:Logger):
+        for root, dirs, files in os.walk(folder):
+                for file in files:
+                    logger.debug(f"parsing file {file}")
+                    filename= os.path.splitext(file)
+                    extension=os.path.splitext(file)
+                    for parser in parsers:
+                        if parser.get_extension == extension:
+                            content = parser.parse(os.path.join(folder,filename))
+                            abstract = content[0,math.Min()]
+                            modification_timestamp = os.path.getmtime(os.path.join(folder,filename))
+                            modification_time = datetime.datetime.fromtimestamp(modification_timestamp)
+                            words = re.findall(r'\b\w+\b', content)
+                            num_words = len(words)
+                    #TODO gestire no parser found 
+                    new_document = Document(folder,filename,self.title_from_filename(filename),modification_time,num_words,abstract,content,extension)
+                    self.add_document(new_document)
+
+                for dir in dirs:
+                    self.add_folder(dir)
+
         self.save_index()
     
     def save_index(self):

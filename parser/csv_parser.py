@@ -1,12 +1,12 @@
 import csv
-from parser.parser import DocumentParser
+from model.parser import DocumentParser
 
 class CSVParser(DocumentParser):
     """
     Parser for CSV file
     """
-    def __init__(self,extension):
-        self.extension = extension
+    def __init__(self):
+        self.extension = "csv|tsv"
         self.CSV_reader = None
     
     def parse(self,file_path):

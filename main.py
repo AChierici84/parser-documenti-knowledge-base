@@ -1,8 +1,27 @@
-import logging
+import os
+from logging import Logger
+from pathlib import Path
+import importlib
+import inspect
 import logging.config
 import configparser
 from model.index import DocumentIndex
+from model.parser import DocumentParser
 from utils.UIUtility import UIUtility
+
+
+commandList={
+  "h": "Menu",
+  "1":"Index new folder",
+  "2":"Search a file",
+  "3":"Visualize all indexed file",
+  "4":"Delete a file from index",
+  "5":"Update index", 
+  "6":"Save Index",
+  "7":"Empty index",
+  "8":"Exit",
+  }
+
 
 def setup_logging(config_file='config.ini'):
     # read config.ini
@@ -42,20 +61,54 @@ def setup_logging(config_file='config.ini'):
     logging.config.dictConfig(log_config)
     return logging.getLogger(__name__)
 
-commandList={
-  "h": "Menu",
-  "1":"Index new folder",
-  "2":"Search a file",
-  "3":"Visualize all indexed file",
-  "4":"Delete a file from index",
-  "5":"Update index", 
-  "6":"Save Index",
-  "7":"Empty index",
-  "8":"Exit",
-  }
+def get_parsers(logger: Logger,config_file='config.ini'):
+    # read config.ini
+    config = configparser.ConfigParser()
+    config.read(config_file)
 
-def main(logger):
-    index=DocumentIndex()
+    parsers_folder= Path(config['parsers']['folder'])
+
+    parsers=[]
+
+    # Itera su tutti i file .py nella cartella
+    for file in parsers_folder.glob("*.py"):
+        if file.name == "__init__.py":
+            continue  # Salta il file __init__.py
+
+        # module name
+        module_name = file.stem
+
+        try:
+            # Importa dinamicamente il modulo
+            module = importlib.import_module(f"{parsers_folder}.{module_name}")
+
+            # Itera su tutti gli oggetti nel modulo
+            for name, obj in inspect.getmembers(module):
+                # Controlla se l'oggetto è una classe e se eredita da DocumentParser
+                if (
+                    inspect.isclass(obj)
+                    and issubclass(obj, DocumentParser)
+                    and obj != DocumentParser  # Esclude la classe base
+                ):
+                    # Istanzia la classe e aggiungi alla lista
+                    instance = obj()
+                    parsers.append(instance)
+                    logger.debug(f"Loaded instance of {obj.__name__}")
+                    
+
+        except ImportError as e:
+            logger.error(f"Errore when importing {module_name}: {e}")
+        except Exception as e:
+            logger.error(f"Errore when processing {module_name}: {e}")
+
+    return parsers
+
+def main(logger: Logger,config_file='config.ini'):
+    # read config.ini
+    config = configparser.ConfigParser()
+    config.read(config_file)
+    index=DocumentIndex(logger,config['index']['file'])
+    parsers =get_parsers()
     UI=UIUtility(commandList)
     cmd=UI.print_intro()
     while(cmd != "8"):
@@ -63,19 +116,24 @@ def main(logger):
         if (cmd == "h"):
             UI.print_menu()
         if (cmd == "1"):
-            index_new_folder()
+            folder=UI.ask_folder()
+            index.add_folder(parsers,folder,logger)
         if (cmd == "2"):
-            search_file()
+            search=UI.ask_keywords()
+            results=index.search(search,logger)
+            for result in results:
+                print(result)
         if (cmd == "3"):
-            view_index()
+            index.view_all()
         if (cmd == "4"):
-            delete_file()
+            path_to_delete=UI.ask_path()
+            index.delete_file(path_to_delete,logger)
         if (cmd == "5"):
-            index.update_index()
+            index.update_index(logger)
         if (cmd == "6"):
-            index.save_index()
+            index.save_index(logger)
         if (cmd == "7"):
-            index.empty_index()
+            index.empty_index(logger)
     pass
 
 if __name__ == "__main__":

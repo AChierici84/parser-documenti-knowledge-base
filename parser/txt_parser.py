@@ -1,9 +1,12 @@
-from parser.parser import DocumentParser
+from model.parser import DocumentParser
 
 class TxtParser(DocumentParser):
     """
     Parser for MD file
     """
+    def __init__(self):
+        self.extension = "txt"
+
     def parse(self,file_path):
         """
         Parse Method
