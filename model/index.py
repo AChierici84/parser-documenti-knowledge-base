@@ -51,19 +51,24 @@ class DocumentIndex:
                     for parser in parsers:
                         if parser.get_extension == extension:
                             content = parser.parse(os.path.join(folder,filename))
+                            doc_id = parser.get_doc_id(content)
                             abstract = content[0,math.Min()]
                             modification_timestamp = os.path.getmtime(os.path.join(folder,filename))
                             modification_time = datetime.datetime.fromtimestamp(modification_timestamp)
-                            words = re.findall(r'\b\w+\b', content)
+                            words = re.findall(r'\b\w+\b', content.toLower())
                             num_words = len(words)
                     #TODO gestire no parser found 
-                    new_document = Document(folder,filename,self.title_from_filename(filename),modification_time,num_words,abstract,content,extension)
+                    new_document = Document(doc_id,folder,filename,self.title_from_filename(filename),modification_time,num_words,abstract,content,extension)
                     self.add_document(new_document)
 
                 for dir in dirs:
                     self.add_folder(dir)
 
         self.save_index()
+
+    def search(self, search,logger:Logger):
+        words = re.findall(r'\b\w+\b', search.toLower())
+
     
     def save_index(self):
         with open(self.file_path, 'w', encoding='utf-8') as f:

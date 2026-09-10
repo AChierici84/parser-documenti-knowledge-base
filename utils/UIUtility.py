@@ -42,6 +42,20 @@ class UIUtility:
     cmd=input("Insert your command: ")
     return cmd
 
+  def ask_folder(self):
+    """
+    ask path of the folder to index
+    """
+    path=input("Insert path of the folder to index: ")
+    return path
+
+  def ask_keyword(self):
+    """
+    ask string to search
+    """
+    search=input("Insert string to search: ")
+    return search
+
   def validator_command(self,cmd):
     """
     Method validating command

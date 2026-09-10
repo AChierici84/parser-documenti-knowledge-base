@@ -4,10 +4,11 @@ class Document:
     """
     Class representing a document
     """
-    def __init__(self, folder, file_name, title, date, num_words, extract, content, extension="txt"):
+    def __init__(self, doc_id, folder, file_name, title, date, num_words, abstract, content, extension="txt"):
         """
         Init document class
         """
+        self.doc_id = doc_id
         self.folder = folder
         self.path = os.path.join(folder,file_name)
         self.dimension = os.path.getsize(self.path)
@@ -15,7 +16,7 @@ class Document:
         self.title = title
         self.date = date
         self.num_words = num_words
-        self.extract = extract
+        self.abstract = abstract
         self.content = content
         self.extension = extension
 
@@ -23,18 +24,19 @@ class Document:
         """
         Document to dictionary
         """
-        return {"folder":self.folder,"file_name": self.file_name,"path":self.path,"title":self.title, "date":self.date, "num_words":self.num_words, "extract": self.extract, "content" : self.content, "extension" : self.extension, "dimension" : self.dimension}
+        return {"doc_id":self.doc_id,"folder":self.folder,"file_name": self.file_name,"path":self.path,"title":self.title, "date":self.date, "num_words":self.num_words, "abstract": self.abstract, "content" : self.content, "extension" : self.extension, "dimension" : self.dimension}
     def from_dict(Document, d):
         """
         Create a Document from a dictionary
         """
         return Document(
+            doc_id=d["doc_id"],
             folder=d["folder"],
             file_name=d["file_name"],
             title=d["title"],
             date=d["date"],
             num_words=d["num_words"],
-            extract=d["extract"],
+            abstract=d["abstract"],
             content=d["content"],
             extension=d.get("extension", "txt") 
         )
@@ -42,4 +44,4 @@ class Document:
         """
         Print method for document
         """
-        return f"{self.file_name}.{self.extension}\n{self.dimension/1024:.2f}KB\nLast modified:{self.date}\nNum words:{self.num_words}\n-----------\n{self.title}\n-----------\n{self.extract}"
+        return f"{self.doc_id}\n{self.file_name}.{self.extension}\n{self.dimension/1024:.2f}KB\nLast modified:{self.date}\nNum words:{self.num_words}\n-----------\n{self.title}\n-----------\n{self.abstract}"
