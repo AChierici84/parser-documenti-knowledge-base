@@ -22,6 +22,10 @@ class DuplicateFileException(Exception):
     """Exception raised when a duplicate file is encountered."""
     pass
 
+class DuplicateDocumentException(Exception):
+    """Exception raised when a duplicate document is encountered in the index."""
+    pass
+
 class InvertedIndexException(Exception):
     """Exception raised for errors encountered with the inverted index."""
     pass

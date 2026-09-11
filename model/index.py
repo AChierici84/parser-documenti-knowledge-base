@@ -5,9 +5,9 @@ import re
 import datetime
 from logging import Logger
 from typing import List
-from document import Document
+from model.document import Document
 from model.custom_exceptions import FolderNotFoundException, InvertedIndexException, MissingParserException, ParsingException, IndexingException, DuplicateDocumentException
-from parser import DocumentParser
+from model.parser import DocumentParser
 from collections import defaultdict
 
 class DocumentIndex:
