@@ -6,7 +6,7 @@ import datetime
 from logging import Logger
 from typing import List
 from document import Document
-from model.custom_exceptions import InvertedIndexException, MissingParserException, ParsingException, IndexingException, DuplicateDocumentException
+from model.custom_exceptions import FolderNotFoundException, InvertedIndexException, MissingParserException, ParsingException, IndexingException, DuplicateDocumentException
 from parser import DocumentParser
 from collections import defaultdict
 
@@ -191,54 +191,27 @@ class DocumentIndex:
             json.dump(dict(self.inverted_index), f)
 
     
-    def remove_document(self, document:Document):
+    def remove_folder(self, folder):
         start_len=len(self.documents)
 
         # Filter list for path to remove
-        self.documents[:] = [doc for doc in self.documents if doc.path != document.path]
-        self.index[:] = [r for r in self.index if r["path"] != document.path]
+        self.documents[:] = [doc for doc in self.documents if doc.folder != folder]
+        self.index[:] = [r for r in self.index if r["folder"] != folder]
         
         if len(self.documents) < start_len:
             self.save_index();
-            self.logger.info(f"Document with path '{document.path}' removed.")
+            self.logger.info(f"Documents in folder '{folder}' removed.")
         else:
-            self.logger.warning(f"Document with path '{document.path}' not found.")
-    
-    def edit_document(self, edit_document:Document):
-        found= False;
+            self.logger.warning(f"No documents found in folder '{folder}'.")
+            raise FolderNotFoundException(f"No documents found in index for folder '{folder}'.")
+
+    def view_all(self):
+        if not self.documents:
+            print("No documents in the index.")
+            return
 
         for doc in self.documents:
-            if doc.file_name == edit_document.file_name:
-                found= True;
-                doc.folder = edit_document.folder
-                doc.path = edit_document.path
-                doc.dimension = edit_document.dimension
-                doc.title =  edit_document.title
-                doc.date =  edit_document.date
-                doc.num_words =  edit_document.num_words
-                doc.extract =  edit_document.extract
-                doc.content =  edit_document.content
-                doc.format =  edit_document.format
-        
-        for doc in self.index:
-            if doc.file_name == edit_document.file_name:
-                doc.folder = edit_document.folder
-                doc.path = edit_document.path
-                doc.dimension = edit_document.dimension
-                doc.title =  edit_document.title
-                doc.date =  edit_document.date
-                doc.num_words =  edit_document.num_words
-                doc.extract =  edit_document.extract
-                doc.content =  edit_document.content
-                doc.format =  edit_document.format
-        if (found):
-            self.save_index()
-            self.logger.info(f"Document with file name '{edit_document.file_name}' edited.")
-        else:
-            self.logger.warning(f"Document with file name '{edit_document.file_name}' not found.")
-            self.errors.append(f"Document with file name '{edit_document.file_name}' not found.")
-            raise FileNotFoundError(f"Document with file name '{edit_document.file_name}' not found.")
-
+            print(f"{doc}")
 
     def empty_index(self):
         self.index= []

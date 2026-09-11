@@ -68,10 +68,16 @@ def setup_logging(config_file='config.ini'):
 
 def get_parsers(logger: Logger,config_file='config.ini'):
     # read config.ini
+
+    if not os.path.exists(config_file):
+        raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
+    
     config = configparser.ConfigParser()
     config.read(config_file)
 
     parsers_folder= Path(config['parsers']['folder'])
+    if not parsers_folder.exists():
+        raise FileNotFoundError(f"Parsers folder '{parsers_folder}' not found.")
 
     parsers=[]
 
@@ -85,7 +91,7 @@ def get_parsers(logger: Logger,config_file='config.ini'):
 
         try:
             # Importa dinamicamente il modulo
-            module = importlib.import_module(f"{parsers_folder}.{module_name}")
+            module = importlib.import_module(f"{config['parsers']['folder']}.{module_name}")
 
             # Itera su tutti gli oggetti nel modulo
             for name, obj in inspect.getmembers(module):
@@ -150,21 +156,38 @@ def main(logger: Logger,config_file='config.ini'):
                 except Exception as e:
                     logger.error(f"Errore when searching: {e}")
             if (cmd == "3"):
-                index.view_all()
-                index.print_stats()
+                try:
+                    index.print_stats()
+                    index.view_all()
+                except Exception as e:
+                    logger.error(f"Errore when viewing all documents: {e}")
             if (cmd == "4"):
-                path_to_delete=UI.ask_path()
-                index.delete_file(path_to_delete)
-                index.print_stats()
+                try:
+                    folder_to_delete=UI.ask_path()
+                    index.remove_folder(folder_to_delete)
+                    index.print_stats()
+                except FolderNotFoundException as e:
+                    logger.error(f"Errore when removing folder: {e}")
+                except Exception as e:
+                    logger.error(f"Errore when removing folder: {e}")
             if (cmd == "5"):
-                index.update_index()
-                index.print_stats()
+                try:
+                    index.update_index()
+                    index.print_stats()
+                except Exception as e:
+                    logger.error(f"Errore when updating index: {e}")
             if (cmd == "6"):
-                index.save_index()
-                index.print_stats()
+                try:
+                    index.save_index()
+                    index.print_stats()
+                except Exception as e:
+                    logger.error(f"Errore when saving index: {e}")
             if (cmd == "7"):
-                index.empty_index()
-                index.print_stats()
+                try:
+                    index.empty_index()
+                    index.print_stats()
+                except Exception as e:
+                    logger.error(f"Errore when emptying index: {e}")
     except configparser.Error as e:
         logger.error(f"Errore in lettura del file di configurazione: {e}")
         raise e
