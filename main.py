@@ -30,7 +30,7 @@ def setup_logging(config_file='config.ini'):
         raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
     
     # read config.ini
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser(interpolation=None)
     config.read(config_file)
 
     # construct log config
@@ -123,7 +123,7 @@ def main(logger: Logger,config_file='config.ini'):
         config = configparser.ConfigParser()
         config.read(config_file)
 
-        index=DocumentIndex(logger,config['index']['index'],config['index']['inverted_index'])
+        index=DocumentIndex(config['index']['index'],config['index']['inverted_index'],logger)
         parsers =get_parsers(logger)
 
         UI=UIUtility(commandList)

@@ -19,9 +19,9 @@ class UIUtility:
    print("/***********************************************************************************/")
 
   def print_welcome(self):
-    self.separatore()
+    self.print_separator()
     print("                 Welcome                       ")
-    self.separatore()
+    self.print_separator()
 
   def print_intro(self):
     """
