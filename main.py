@@ -108,7 +108,7 @@ def main(logger: Logger,config_file='config.ini'):
     config = configparser.ConfigParser()
     config.read(config_file)
     index=DocumentIndex(logger,config['index']['index'],config['index']['inverted_index'])
-    parsers =get_parsers()
+    parsers =get_parsers(logger)
     UI=UIUtility(commandList)
     cmd=UI.print_intro()
     while(cmd != "8"):
@@ -117,23 +117,23 @@ def main(logger: Logger,config_file='config.ini'):
             UI.print_menu()
         if (cmd == "1"):
             folder=UI.ask_folder()
-            index.add_folder(parsers,folder,logger)
+            index.add_folder(folder, parsers)
         if (cmd == "2"):
             search=UI.ask_keywords()
-            results=index.search(search,logger)
+            results=index.search(search)
             for result in results:
                 print(result)
         if (cmd == "3"):
             index.view_all()
         if (cmd == "4"):
             path_to_delete=UI.ask_path()
-            index.delete_file(path_to_delete,logger)
+            index.delete_file(path_to_delete)
         if (cmd == "5"):
-            index.update_index(logger)
+            index.update_index()
         if (cmd == "6"):
-            index.save_index(logger)
+            index.save_index()
         if (cmd == "7"):
-            index.empty_index(logger)
+            index.empty_index()
     pass
 
 if __name__ == "__main__":

@@ -46,13 +46,13 @@ class DocumentIndex:
                 self.inverted_index = json.load(f)
             logger(f"Loaded inverted index JSON file.")        
     
-    def add_document(self,document:Document,logger:Logger):
+    def add_document(self,document:Document):
         self.documents.append(document)
         self.index.append(document.to_dict())
-        logger.debug(f"document.file_name (document.doc_id) saved")
+        self.logger.debug(f"document.file_name (document.doc_id) saved")
         self.save_index()
 
-    def title_from_filename(self, title,logger):
+    def title_from_filename(self, title):
         """
         get title from filename
         """
@@ -76,24 +76,24 @@ class DocumentIndex:
         # Rimuovi spazi doppi usando espressioni regolari
         cleaned_title = re.sub(r'\s+', ' ', normalized_title).strip()
 
-        logger.debug("Testo originale:", title)
-        logger.debug("Testo normalizzato:", normalized_title)
-        logger.debug("Testo pulito:", cleaned_title)
+        self.logger.debug("Testo originale:", title)
+        self.logger.debug("Testo normalizzato:", normalized_title)
+        self.logger.debug("Testo pulito:", cleaned_title)
         return cleaned_title
 
-    def add_folder(self, folder, parsers: list[DocumentParser],logger:Logger):
+    def add_folder(self, folder, parsers: list[DocumentParser]):
         for root, dirs, files in os.walk(folder):
                 for file in files:
-                    logger.debug(f"parsing file {file}")
+                    self.logger.debug(f"parsing file {file}")
                     filename= os.path.splitext(file)[0]
                     extension=os.path.splitext(file)[1]
                     for parser in parsers:
-                        if parser.get_extension == extension:
-                            content = parser.parse(os.path.join(folder,filename))
+                        if parser.get_extension() == extension:
+                            content = parser.parse(os.path.join(folder,file))
                             doc_id = parser.get_doc_id(content)
                             abstract = content[0,math.Min()]
                             title= self.title_from_filename(filename)
-                            modification_timestamp = os.path.getmtime(os.path.join(folder,filename))
+                            modification_timestamp = os.path.getmtime(os.path.join(folder,file))
                             modification_time = datetime.datetime.fromtimestamp(modification_timestamp)
                             words = re.findall(r'\b\w+\b', title.lower()+" "+content.lower())
                             # Popola l'inverted index
@@ -106,11 +106,11 @@ class DocumentIndex:
                     self.add_document(new_document)
 
                 for dir in dirs:
-                    self.add_folder(dir)
+                    self.add_folder(os.path.join(folder,dir))
 
         self.save_index()
 
-    def search(self, search,logger:Logger):
+    def search(self, search):
         words = re.findall(r'\b\w+\b', search.lower())
         doc_scores = defaultdict(float)
 
@@ -132,8 +132,7 @@ class DocumentIndex:
             if doc_id in doc_id_to_doc:
                 results.append((doc_id_to_doc[doc_id], score))
 
-        if logger:
-            logger.info(f"Trovati {len(results)} risultati per la query: '{search}'")
+        self.logger.info(f"Trovati {len(results)} risultati per la query: '{search}'")
 
         return results
 
@@ -143,7 +142,7 @@ class DocumentIndex:
             json.dump(self.index, f)
         # Save inverted index
         with open(self.inverted_file_path, "w") as f:
-            json.dump(dict(self.inverted_file_path), f)
+            json.dump(dict(self.inverted_index), f)
 
     
     def remove_document(self, document:Document):
@@ -194,7 +193,7 @@ class DocumentIndex:
 
     def empty_index(self):
         self.index= []
-        self.inverted_index=[]
+        self.inverted_index={}
         self.documents = []
         self.save_index()
 
@@ -202,11 +201,11 @@ class DocumentIndex:
         #get all folders
         folders=[]
         for document in self.documents:
-            if document.folder in folders:
-                folders.append(folder)
+            if document.folder not in folders:
+                folders.append(document.folder)
         self.empty_index()
         for folder in folders:
-            self.add_folder(folder)
+            self.add_folder(folder, self.parsers)
              
 
     
