@@ -147,7 +147,7 @@ def main(logger: Logger,config_file='config.ini'):
                     logger.error(f"Errore when adding folder: {e}")
             if (cmd == "2"):
                 try:
-                    search=UI.ask_keywords()
+                    search=UI.ask_keyword()
                     results=index.search(search)
                     for result in results:
                         print(result)
@@ -163,7 +163,7 @@ def main(logger: Logger,config_file='config.ini'):
                     logger.error(f"Errore when viewing all documents: {e}")
             if (cmd == "4"):
                 try:
-                    folder_to_delete=UI.ask_path()
+                    folder_to_delete=UI.ask_folder()
                     index.remove_folder(folder_to_delete)
                     index.print_stats()
                 except FolderNotFoundException as e:
@@ -188,6 +188,7 @@ def main(logger: Logger,config_file='config.ini'):
                     index.print_stats()
                 except Exception as e:
                     logger.error(f"Errore when emptying index: {e}")
+            cmd = UI.validator_command(UI.new_command())
     except configparser.Error as e:
         logger.error(f"Errore in lettura del file di configurazione: {e}")
         raise e

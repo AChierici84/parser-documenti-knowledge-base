@@ -232,6 +232,10 @@ class DocumentIndex:
             self.add_folder(folder, self.parsers)
         
     def print_stats(self):
+        print(f"Total documents: {self.total_documents}")
+        print(f"Total errors: {len(self.errors)}")
+        for error in self.errors:
+            print(f"Error: {error}")
         self.logger.info(f"Total documents: {self.total_documents}")
         self.logger.info(f"Total errors: {len(self.errors)}")
         for error in self.errors:
