@@ -1,5 +1,5 @@
 from model.parser import DocumentParser
-
+from model.custom_exceptions import ParsingException
 class TxtParser(DocumentParser):
     """
     Parser for MD file
@@ -11,6 +11,10 @@ class TxtParser(DocumentParser):
         """
         Parse Method
         """
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-            return content
+        content = ""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                return content
+        except Exception as e:
+            raise ParsingException(f"Error parsing TXT file {file_path}: {e}")

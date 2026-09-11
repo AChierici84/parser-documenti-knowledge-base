@@ -1,5 +1,6 @@
 import csv
 from model.parser import DocumentParser
+from model.custom_exceptions import ParsingException, MissingParserException
 
 class CSVParser(DocumentParser):
     """
@@ -13,11 +14,15 @@ class CSVParser(DocumentParser):
         """
         Parse Method
         """
-        with open(file_path, 'r', encoding='utf-8') as file:
-            CSV_reader = csv.reader(file)
+        content = ""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                CSV_reader = csv.reader(file)
 
-            # Reead line by line
-            for row in CSV_reader:
-                content += row + "\n"
+                # Reead line by line
+                for row in CSV_reader:
+                    content += ",".join(row) + "\n"
 
-        return content
+            return content
+        except Exception as e:
+            raise ParsingException(f"Error parsing CSV file {file_path}: {e}")

@@ -1,5 +1,6 @@
 from abc import abstractmethod
 import hashlib
+from model.custom_exceptions import ParsingException, MissingParserException
 
 class DocumentParser:
     def __init__(self):
@@ -22,6 +23,8 @@ class DocumentParser:
     @abstractmethod
     def parse(self, file_path: str) -> str:
         """Abstract method to parsare a file."""
-        pass
+        raise MissingParserException(
+            f"Parsing non implementato per il file: {file_path}"
+        )
 
 

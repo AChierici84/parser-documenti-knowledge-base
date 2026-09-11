@@ -5,6 +5,7 @@ import importlib
 import inspect
 import logging.config
 import configparser
+from model.custom_exceptions import FolderNotFoundException, InvertedIndexException
 from model.index import DocumentIndex
 from model.parser import DocumentParser
 from utils.UIUtility import UIUtility
@@ -24,6 +25,10 @@ commandList={
 
 
 def setup_logging(config_file='config.ini'):
+
+    if not os.path.exists(config_file):
+        raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
+    
     # read config.ini
     config = configparser.ConfigParser()
     config.read(config_file)
@@ -105,35 +110,67 @@ def get_parsers(logger: Logger,config_file='config.ini'):
 
 def main(logger: Logger,config_file='config.ini'):
     # read config.ini
-    config = configparser.ConfigParser()
-    config.read(config_file)
-    index=DocumentIndex(logger,config['index']['index'],config['index']['inverted_index'])
-    parsers =get_parsers(logger)
-    UI=UIUtility(commandList)
-    cmd=UI.print_intro()
-    while(cmd != "8"):
-        cmd=UI.validator_command(cmd)
-        if (cmd == "h"):
-            UI.print_menu()
-        if (cmd == "1"):
-            folder=UI.ask_folder()
-            index.add_folder(folder, parsers)
-        if (cmd == "2"):
-            search=UI.ask_keywords()
-            results=index.search(search)
-            for result in results:
-                print(result)
-        if (cmd == "3"):
-            index.view_all()
-        if (cmd == "4"):
-            path_to_delete=UI.ask_path()
-            index.delete_file(path_to_delete)
-        if (cmd == "5"):
-            index.update_index()
-        if (cmd == "6"):
-            index.save_index()
-        if (cmd == "7"):
-            index.empty_index()
+    try:
+        if not os.path.exists(config_file):
+            raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
+        
+        config = configparser.ConfigParser()
+        config.read(config_file)
+
+        index=DocumentIndex(logger,config['index']['index'],config['index']['inverted_index'])
+        parsers =get_parsers(logger)
+
+        UI=UIUtility(commandList)
+
+        cmd=UI.print_intro()
+
+        while(cmd != "8"):
+            cmd=UI.validator_command(cmd)
+            if (cmd == "h"):
+                UI.print_menu()
+            if (cmd == "1"):
+                try:
+                    folder=UI.ask_folder()
+                    if not os.path.exists(folder):
+                        raise FolderNotFoundException(f"Folder '{folder}' not found.")
+                    index.add_folder(folder, parsers)
+                    index.print_stats()
+                except FolderNotFoundException as e:
+                    logger.error(f"Errore when adding folder: {e}")
+                except Exception as e:
+                    logger.error(f"Errore when adding folder: {e}")
+            if (cmd == "2"):
+                try:
+                    search=UI.ask_keywords()
+                    results=index.search(search)
+                    for result in results:
+                        print(result)
+                except InvertedIndexException as e:
+                    logger.error(f"Errore with inverted index: {e}")
+                except Exception as e:
+                    logger.error(f"Errore when searching: {e}")
+            if (cmd == "3"):
+                index.view_all()
+                index.print_stats()
+            if (cmd == "4"):
+                path_to_delete=UI.ask_path()
+                index.delete_file(path_to_delete)
+                index.print_stats()
+            if (cmd == "5"):
+                index.update_index()
+                index.print_stats()
+            if (cmd == "6"):
+                index.save_index()
+                index.print_stats()
+            if (cmd == "7"):
+                index.empty_index()
+                index.print_stats()
+    except configparser.Error as e:
+        logger.error(f"Errore in lettura del file di configurazione: {e}")
+        raise e
+    except Exception as e:
+        logger.error(f"Errore in main: {e}")
+        raise e
     pass
 
 if __name__ == "__main__":
