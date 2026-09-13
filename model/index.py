@@ -19,7 +19,7 @@ class DocumentIndex:
         self.inverted_file_path=inverted_file_path
         self.index= []
         self.documents= []
-        self.inverted_index= {}
+        self.inverted_index= defaultdict(list)
         self.logger = logger
         self.total_documents = 0
         self.errors = []
@@ -47,7 +47,7 @@ class DocumentIndex:
         else:
             # if exists, load data
             with open(inverted_file_path, 'r', encoding='utf-8') as f:
-                self.inverted_index = json.load(f)
+                self.inverted_index = defaultdict(list, json.load(f))
             self.logger.debug(f"Loaded inverted index JSON file.")        
     
     def add_document(self,document:Document):
@@ -98,15 +98,17 @@ class DocumentIndex:
                         self.logger.debug(f"parsing file {file}")
                         filename= os.path.splitext(file)[0]
                         extension=os.path.splitext(file)[1]
+                        normalized_extension = extension.lstrip(".").lower()
                         for parser in parsers:
-                            if parser.get_extension() == extension:
+                            parser_extensions = [ext.strip().lower() for ext in parser.get_extension().split("|")]
+                            if normalized_extension in parser_extensions:
                                 self.logger.debug(f"using parser {parser.__class__.__name__} for file {file}")
                                 parser_found = True
-                                content = parser.parse(os.path.join(folder,file))
+                                content = parser.parse(os.path.join(root,file))
                                 doc_id = parser.get_doc_id(content)
                                 abstract = content[0:min(len(content), 100)]
                                 title= self.title_from_filename(filename)
-                                modification_timestamp = os.path.getmtime(os.path.join(folder,file))
+                                modification_timestamp = os.path.getmtime(os.path.join(root,file))
                                 modification_time = datetime.datetime.fromtimestamp(modification_timestamp)
                                 words = re.findall(r'\b\w+\b', title.lower()+" "+content.lower())
                                 # Popola l'inverted index
@@ -118,8 +120,8 @@ class DocumentIndex:
                         if not parser_found:
                             self.logger.warning(f"No parser found for file {file}")
                             raise MissingParserException(f"No parser found for file {file}")
-                        new_document = Document(doc_id,folder,filename,title,modification_time,num_words,abstract,content,extension)
-                        doc_id_to_doc = {doc["doc_id"]: doc for doc in self.documents}
+                        new_document = Document(doc_id,root,filename,title,modification_time,num_words,abstract,content,extension)
+                        doc_id_to_doc = {doc.doc_id: doc for doc in self.documents}
                         if doc_id not in doc_id_to_doc:
                             self.add_document(new_document)
                         else:
@@ -147,7 +149,7 @@ class DocumentIndex:
                         continue
 
                 for dir in dirs:
-                    self.add_folder(os.path.join(folder,dir))
+                    self.add_folder(os.path.join(folder,dir),parsers)
 
         self.save_index()
 
@@ -171,7 +173,7 @@ class DocumentIndex:
         sorted_docs = sorted(doc_scores.items(), key=lambda x: x, reverse=True)
 
         #get doc_ids
-        doc_id_to_doc = {doc["doc_id"]: doc for doc in self.documents}
+        doc_id_to_doc = {doc.doc_id: doc for doc in self.documents}
 
         results = []
         for doc_id, score in sorted_docs:
@@ -215,7 +217,7 @@ class DocumentIndex:
 
     def empty_index(self):
         self.index= []
-        self.inverted_index={}
+        self.inverted_index=defaultdict(list)
         self.documents = []
         self.total_documents = 0
         self.errors = []

@@ -1,4 +1,5 @@
 import os
+import datetime
 
 class Document:
     """
@@ -10,7 +11,7 @@ class Document:
         """
         self.doc_id = doc_id
         self.folder = folder
-        self.path = os.path.join(folder,file_name)
+        self.path = os.path.join(folder, f"{file_name}{extension}" if extension.startswith(".") else f"{file_name}.{extension}")
         self.dimension = os.path.getsize(self.path)
         self.file_name = file_name
         self.title = title
@@ -24,7 +25,7 @@ class Document:
         """
         Document to dictionary
         """
-        return {"doc_id":self.doc_id,"folder":self.folder,"file_name": self.file_name,"path":self.path,"title":self.title, "date":self.date, "num_words":self.num_words, "abstract": self.abstract, "content" : self.content, "extension" : self.extension, "dimension" : self.dimension}
+        return {"doc_id":self.doc_id,"folder":self.folder,"file_name": self.file_name,"path":self.path,"title":self.title, "date":self.date.isoformat(), "num_words":self.num_words, "abstract": self.abstract, "content" : self.content, "extension" : self.extension, "dimension" : self.dimension}
     def from_dict(Document, d):
         """
         Create a Document from a dictionary
@@ -34,7 +35,7 @@ class Document:
             folder=d["folder"],
             file_name=d["file_name"],
             title=d["title"],
-            date=d["date"],
+            date=datetime.datetime.fromisoformat(d["date"]) if isinstance(d["date"], str) else d["date"],
             num_words=d["num_words"],
             abstract=d["abstract"],
             content=d["content"],
