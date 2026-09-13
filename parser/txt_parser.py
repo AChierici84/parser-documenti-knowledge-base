@@ -13,7 +13,7 @@ class TxtParser(DocumentParser):
         """
         content = ""
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, 'r', encoding=self.detect_encoding(file_path)) as f:
                 content = f.read()
                 return content
         except Exception as e:
