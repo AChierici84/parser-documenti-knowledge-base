@@ -37,7 +37,7 @@ All'avvio viene mostrato un menu interattivo. Le operazioni disponibili sono:
 | `1` | Indicizza una nuova cartella |
 | `2` | Cerca una parola o una frase nell'indice |
 | `3` | Visualizza tutti i file indicizzati |
-| `4` | Rimuove un file dall'indice |
+| `4` | Rimuove una cartella dall'indice |
 | `5` | Aggiorna l'indice |
 | `6` | Salva l'indice su disco |
 | `7` | Svuota l'indice |

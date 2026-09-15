@@ -16,7 +16,7 @@ commandList={
   "1":"Index new folder",
   "2":"Search a file",
   "3":"Visualize all indexed file",
-  "4":"Delete a file from index",
+  "4":"Delete a folder from index",
   "5":"Update index", 
   "6":"Save Index",
   "7":"Empty index",
