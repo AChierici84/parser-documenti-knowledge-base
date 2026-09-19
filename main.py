@@ -25,7 +25,7 @@ commandList={
 
 
 def setup_logging(config_file='config.ini'):
-
+    """Setup logging configuration from config file."""
     if not os.path.exists(config_file):
         raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
     
@@ -67,6 +67,7 @@ def setup_logging(config_file='config.ini'):
     return logging.getLogger(__name__)
 
 def get_parsers(logger: Logger,config_file='config.ini'):
+    """Dynamically load and return all parser instances."""
     # read config.ini
 
     if not os.path.exists(config_file):
@@ -115,6 +116,7 @@ def get_parsers(logger: Logger,config_file='config.ini'):
     return parsers
 
 def main(logger: Logger,config_file='config.ini'):
+    """Main entry point for the application."""
     # read config.ini
     try:
         if not os.path.exists(config_file):
@@ -135,6 +137,7 @@ def main(logger: Logger,config_file='config.ini'):
             if (cmd == "h"):
                 UI.print_menu()
             if (cmd == "1"):
+                # Aggiungi una cartella all'indice dei documenti. Chiede all'utente di specificare la cartella e gestisce eventuali errori.
                 try:
                     folder=UI.ask_folder()
                     if not os.path.exists(folder):
@@ -146,6 +149,7 @@ def main(logger: Logger,config_file='config.ini'):
                 except Exception as e:
                     logger.error(f"Errore when adding folder: {e}")
             if (cmd == "2"):
+                # Cerca documenti nell'indice dei documenti utilizzando una parola chiave fornita dall'utente.
                 try:
                     search=UI.ask_keyword()
                     results=index.search(search)
@@ -156,12 +160,14 @@ def main(logger: Logger,config_file='config.ini'):
                 except Exception as e:
                     logger.error(f"Errore when searching: {e}")
             if (cmd == "3"):
+                # Visualizza tutte le informazioni sull'indice dei documenti.
                 try:
                     index.print_stats()
                     index.view_all()
                 except Exception as e:
                     logger.error(f"Errore when viewing all documents: {e}")
             if (cmd == "4"):
+                # Rimuovi una cartella dall'indice dei documenti. Chiede all'utente di specificare la cartella e gestisce eventuali errori.
                 try:
                     folder_to_delete=UI.ask_folder()
                     index.remove_folder(folder_to_delete)
@@ -171,18 +177,21 @@ def main(logger: Logger,config_file='config.ini'):
                 except Exception as e:
                     logger.error(f"Errore when removing folder: {e}")
             if (cmd == "5"):
+                # Aggiorna l'indice dei documenti rielaborando tutte le cartelle presenti nell'indice.
                 try:
                     index.update_index()
                     index.print_stats()
                 except Exception as e:
                     logger.error(f"Errore when updating index: {e}")
             if (cmd == "6"):
+                # Salva l'indice dei documenti su disco.
                 try:
                     index.save_index()
                     index.print_stats()
                 except Exception as e:
                     logger.error(f"Errore when saving index: {e}")
             if (cmd == "7"):
+                # Svuota completamente l'indice dei documenti.
                 try:
                     index.empty_index()
                     index.print_stats()
@@ -198,5 +207,6 @@ def main(logger: Logger,config_file='config.ini'):
     pass
 
 if __name__ == "__main__":
+    """Main entry point for the application."""
     logger = setup_logging()
     main(logger)

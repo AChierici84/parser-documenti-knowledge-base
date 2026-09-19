@@ -199,6 +199,13 @@ class DocumentIndex:
         # Filter list for path to remove
         self.documents[:] = [doc for doc in self.documents if doc.folder != folder]
         self.index[:] = [r for r in self.index if r["folder"] != folder]
+        doc_id_to_doc = {doc.doc_id: doc for doc in self.documents}
+        
+        # Remove entries from inverted index related to the folder
+        for word in list(self.inverted_index.keys()):
+            self.inverted_index[word] = [doc_id for doc_id in self.inverted_index[word] if doc_id_to_doc[doc_id].folder != folder]
+            if not self.inverted_index[word]:
+                del self.inverted_index[word]
         
         if len(self.documents) < start_len:
             self.save_index();

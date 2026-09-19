@@ -7,12 +7,21 @@ class CSVParser(DocumentParser):
     Parser for CSV file
     """
     def __init__(self):
+        """
+        Initialize the CSV parser.
+        """
         self.extension = "csv|tsv"
         self.CSV_reader = None
     
     def parse(self,file_path):
         """
-        Parse Method
+        Parse the CSV file and return its content as a string.
+
+        Args:
+            file_path (str): Path to the CSV file.
+
+        Returns:
+            str: Content of the CSV file.
         """
         content = ""
         try:

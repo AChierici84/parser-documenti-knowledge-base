@@ -2,14 +2,23 @@ from model.parser import DocumentParser
 from model.custom_exceptions import ParsingException
 class TxtParser(DocumentParser):
     """
-    Parser for MD file
+    Parser for TXT file
     """
     def __init__(self):
+        """
+        Initialize the TXT parser.
+        """
         self.extension = "txt"
 
     def parse(self,file_path):
         """
-        Parse Method
+        Parse the TXT file and return its content as a string.
+
+        Args:
+            file_path (str): Path to the TXT file.
+
+        Returns:
+            str: Content of the TXT file.
         """
         content = ""
         try:

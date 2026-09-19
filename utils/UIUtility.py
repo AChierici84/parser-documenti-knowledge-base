@@ -16,10 +16,16 @@ class UIUtility:
       print(f"[{key}] {self.list_action[key]}")
 
   def print_separator(self):
-   print("/***********************************************************************************/")
+    """
+    Print a separator line in the UI.
+    """
+    print("/***********************************************************************************/")
 
   def print_welcome(self):
     self.print_separator()
+    """
+    Print the welcome message in the UI.
+    """
     print("                 Welcome                       ")
     self.print_separator()
 

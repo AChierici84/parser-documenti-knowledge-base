@@ -5,14 +5,20 @@ from model.custom_exceptions import ParsingException
 
 class MdParser(DocumentParser):
     """
-    Parser for MD file
+    Parser for MD file (Markdown).
     """
     def __init__(self):
         self.extension = "md"
 
     def parse(self,file_path):
         """
-        Parse Method for MD file
+        Parse the MD file and return its content as a plain text string.
+
+        Args:
+            file_path (str): Path to the MD file.
+
+        Returns:
+            str: Plain text content of the MD file.
         """
         content = ""
         try:
@@ -24,7 +30,13 @@ class MdParser(DocumentParser):
 
     def extract_plain_text(self, content):
         """
-        extract plain text from md file
+        Extract plain text from the given MD file content.
+
+        Args:
+            content (str): Raw content of the MD file.
+
+        Returns:
+            str: Plain text content with Markdown syntax removed.
         """
         # Remove Markdown syntax while keeping the text represented by it.
         plain_text = re.sub(r'^\ufeff?---\s*$.*?^---\s*$', '', content,
