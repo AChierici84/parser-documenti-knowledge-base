@@ -148,9 +148,6 @@ class DocumentIndex:
                         self.errors.append(f"Error processing file {file}: {e}")
                         continue
 
-                for dir in dirs:
-                    self.add_folder(os.path.join(folder,dir),parsers)
-
         self.save_index()
 
     def search(self, search):
