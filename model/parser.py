@@ -1,6 +1,6 @@
 from abc import abstractmethod
 import hashlib
-import chardet
+from chardet.universaldetector import UniversalDetector
 from model.custom_exceptions import ParsingException, MissingParserException
 
 class DocumentParser:
@@ -36,7 +36,7 @@ class DocumentParser:
             str: Detected encoding of the file.
         """
         with open(file_path, 'rb') as file:
-            detector = chardet.universaldetector.UniversalDetector()
+            detector = UniversalDetector()
             for line in file:
                 detector.feed(line)
                 if detector.done:

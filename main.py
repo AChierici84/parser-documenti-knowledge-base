@@ -131,9 +131,9 @@ def main(logger: Logger,config_file='config.ini'):
         UI=UIUtility(commandList)
 
         cmd=UI.print_intro()
+        cmd=UI.validator_command(cmd)
 
         while(cmd != "8"):
-            cmd=UI.validator_command(cmd)
             if (cmd == "h"):
                 UI.print_menu()
             if (cmd == "1"):
@@ -179,7 +179,7 @@ def main(logger: Logger,config_file='config.ini'):
             if (cmd == "5"):
                 # Aggiorna l'indice dei documenti rielaborando tutte le cartelle presenti nell'indice.
                 try:
-                    index.update_index()
+                    index.update_index(parsers)
                     index.print_stats()
                 except Exception as e:
                     logger.error(f"Errore when updating index: {e}")

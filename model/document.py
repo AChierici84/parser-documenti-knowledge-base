@@ -26,11 +26,13 @@ class Document:
         Document to dictionary
         """
         return {"doc_id":self.doc_id,"folder":self.folder,"file_name": self.file_name,"path":self.path,"title":self.title, "date":self.date.isoformat(), "num_words":self.num_words, "abstract": self.abstract, "content" : self.content, "extension" : self.extension, "dimension" : self.dimension}
-    def from_dict(Document, d):
+
+    @classmethod
+    def from_dict(cls, d):
         """
         Create a Document from a dictionary
         """
-        return Document(
+        return cls(
             doc_id=d["doc_id"],
             folder=d["folder"],
             file_name=d["file_name"],

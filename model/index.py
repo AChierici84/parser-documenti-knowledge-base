@@ -200,7 +200,7 @@ class DocumentIndex:
         self.documents[:] = [doc for doc in self.documents if doc.folder != folder]
         self.index[:] = [r for r in self.index if r["folder"] != folder]
         doc_id_to_doc = {doc.doc_id: doc for doc in self.documents}
-        
+
         # Remove entries from inverted index related to the folder
         for word in list(self.inverted_index.keys()):
             self.inverted_index[word] = [doc_id for doc_id in self.inverted_index[word] if doc_id_to_doc[doc_id].folder != folder]
@@ -230,7 +230,7 @@ class DocumentIndex:
         self.errors = []
         self.save_index()
 
-    def update_index(self):
+    def update_index(self, parsers: list[DocumentParser]):
         #get all folders
         folders=[]
         for document in self.documents:
@@ -238,7 +238,7 @@ class DocumentIndex:
                 folders.append(document.folder)
         self.empty_index()
         for folder in folders:
-            self.add_folder(folder, self.parsers)
+            self.add_folder(folder, parsers)
         
     def print_stats(self):
         print(f"Total documents: {self.total_documents}")
