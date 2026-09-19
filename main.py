@@ -154,7 +154,7 @@ def main(logger: Logger,config_file='config.ini'):
                     search=UI.ask_keyword()
                     results=index.search(search)
                     for result in results:
-                        print(result)
+                        print(f"{result[0]} Score: {result[1]}")
                 except InvertedIndexException as e:
                     logger.error(f"Errore with inverted index: {e}")
                 except Exception as e:
@@ -204,6 +204,7 @@ def main(logger: Logger,config_file='config.ini'):
     except Exception as e:
         logger.error(f"Errore in main: {e}")
         raise e
+    UI.print_bye()
     pass
 
 if __name__ == "__main__":

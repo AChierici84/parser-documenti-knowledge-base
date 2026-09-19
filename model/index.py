@@ -203,7 +203,7 @@ class DocumentIndex:
 
         # Remove entries from inverted index related to the folder
         for word in list(self.inverted_index.keys()):
-            self.inverted_index[word] = [doc_id for doc_id in self.inverted_index[word] if doc_id_to_doc[doc_id].folder != folder]
+            self.inverted_index[word] = [doc_id for doc_id in self.inverted_index[word] if doc_id in doc_id_to_doc]
             if not self.inverted_index[word]:
                 del self.inverted_index[word]
         

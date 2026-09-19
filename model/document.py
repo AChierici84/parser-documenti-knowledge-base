@@ -47,4 +47,4 @@ class Document:
         """
         Print method for document
         """
-        return f"{self.doc_id}\n{self.file_name}.{self.extension}\n{self.dimension/1024:.2f}KB\nLast modified:{self.date}\nNum words:{self.num_words}\n-----------\n{self.title}\n-----------\n{self.abstract}"
+        return f"\n-----------\nId:{self.doc_id}\nName:{self.file_name}.{self.extension}\nSize:{self.dimension/1024:.2f}KB\nLast modified:{self.date}\nNum words:{self.num_words}\n-----------\n"
