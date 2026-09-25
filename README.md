@@ -18,8 +18,8 @@ possibile una ricerca testuale sull'indice.
 ## Requisiti
 
 - Python 3.9 o superiore;
-- nessuna dipendenza esterna: il progetto utilizza solo la libreria standard;
-- file leggibili in codifica UTF-8.
+- Il progetto utilizza principalmente libreria standard;
+- La libreria 'chardet' permette di identificare automaticamente la codifica dei file.  
 
 ## Avvio
 
