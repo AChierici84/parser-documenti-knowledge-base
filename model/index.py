@@ -15,6 +15,14 @@ class DocumentIndex:
     Class representing document index
     """
     def __init__(self, file_path,inverted_file_path, logger:Logger):
+        """
+        Initialize the DocumentIndex.
+
+        Args:
+            file_path (str): Path to the main index file.
+            inverted_file_path (str): Path to the inverted index file.
+            logger (Logger): Logger instance for logging.
+        """
         self.file_path = file_path
         self.inverted_file_path=inverted_file_path
         self.index= []
@@ -51,6 +59,12 @@ class DocumentIndex:
             self.logger.debug(f"Loaded inverted index JSON file.")        
     
     def add_document(self,document:Document):
+        """
+        Add a document to the index.
+
+        Args:
+            document (Document): The document to add.
+        """
         try:
             self.documents.append(document)
             self.index.append(document.to_dict())
@@ -63,7 +77,14 @@ class DocumentIndex:
 
     def title_from_filename(self, title):
         """
-        get title from filename
+        Extract a normalized title from a filename by replacing special characters with spaces
+        and removing extra spaces.
+
+        Args:
+            title (str): The original filename.
+
+        Returns:
+            str: The cleaned and normalized title.
         """
         normalized_title = (
         title
@@ -91,6 +112,13 @@ class DocumentIndex:
         return cleaned_title
 
     def add_folder(self, folder, parsers: list[DocumentParser]):
+        """
+        Add all documents from a folder to the index using right parser for each file based on its extension.
+
+        Args:
+            folder (str): Path to the folder containing documents.
+            parsers (list[DocumentParser]): List of parser instances to use for parsing documents.
+        """
         for root, dirs, files in os.walk(folder):
                 for file in files:
                     try:
@@ -151,6 +179,15 @@ class DocumentIndex:
         self.save_index()
 
     def search(self, search):
+        """
+        Search for documents matching the given query.
+
+        Args:
+            search (str): The search query.
+
+        Returns:
+            list[tuple[Document, float]]: List of tuples containing matching documents and their scores.
+        """
         words = re.findall(r'\b\w+\b', search.lower())
         doc_scores = defaultdict(float)
 
@@ -183,6 +220,9 @@ class DocumentIndex:
 
     
     def save_index(self):
+        """
+        Save the main index and the inverted index to their respective files.
+        """
         with open(self.file_path, 'w', encoding='utf-8') as f:
             json.dump(self.index, f)
         # Save inverted index
@@ -191,6 +231,15 @@ class DocumentIndex:
 
     
     def remove_folder(self, folder):
+        """
+        Remove all documents of a folder from index.
+
+        Args:
+            folder (str): Path to the folder to remove.
+
+        Raises:
+            FolderNotFoundException: If no documents from the specified folder are found in the index.
+        """
         start_len=len(self.documents)
 
         # Filter list for path to remove
@@ -212,6 +261,9 @@ class DocumentIndex:
             raise FolderNotFoundException(f"No documents found in index for folder '{folder}'.")
 
     def view_all(self):
+        """
+        View all documents currently in the index.
+        """
         if not self.documents:
             print("No documents in the index.")
             return
@@ -220,6 +272,9 @@ class DocumentIndex:
             print(f"{doc}")
 
     def empty_index(self):
+        """
+        Empty the entire index, including the main index, inverted index, and document list.
+        """
         self.index= []
         self.inverted_index=defaultdict(list)
         self.documents = []
@@ -228,6 +283,12 @@ class DocumentIndex:
         self.save_index()
 
     def update_index(self, parsers: list[DocumentParser]):
+        """
+        Update the index by re-adding all folders currently in the index using the provided parsers.
+
+        Args:
+            parsers (list[DocumentParser]): List of parser instances to use for parsing documents.
+        """
         #get all folders
         folders=[]
         for document in self.documents:
@@ -238,6 +299,9 @@ class DocumentIndex:
             self.add_folder(folder, parsers)
         
     def print_stats(self):
+        """
+        Print statistics about the current state of the index, including total documents and errors.
+        """
         print(f"Total documents: {self.total_documents}")
         print(f"Total errors: {len(self.errors)}")
         for error in self.errors:
