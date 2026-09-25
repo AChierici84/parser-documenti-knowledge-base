@@ -22,7 +22,7 @@ class DocumentParser:
         Method to generate doc id
         """
         hash_object = hashlib.sha256(content.encode('utf-8'))
-        doc_id = hash_object.hexdigest()[:16] #first 16 chars
+        doc_id = hash_object.hexdigest()[:16]  # Keep the first 16 characters.
         return doc_id
 
     def detect_encoding(self, file_path):

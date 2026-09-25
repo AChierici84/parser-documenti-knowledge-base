@@ -32,15 +32,13 @@ def setup_logging(config_file='config.ini'):
     if not os.path.exists(config_file):
         raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
     
-    # read config.ini
     config = configparser.ConfigParser(interpolation=None)
     config.read(config_file)    
     
-    #create folder for the log file if it doesn't exist
+    # Create the log directory if it does not exist.
     if not os.path.exists(os.path.dirname(config['logging']['file'])):
         os.makedirs(os.path.dirname(config['logging']['file']), exist_ok=True)
 
-    # construct log config
     log_config = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -60,7 +58,7 @@ def setup_logging(config_file='config.ini'):
             'console': {
                 'class': 'logging.StreamHandler',
                 'formatter': 'standard',
-                'level': 'INFO',  #different lvl for console
+                'level': 'INFO',  # Use a different log level for the console.
             },
         },
         'root': {
@@ -69,14 +67,12 @@ def setup_logging(config_file='config.ini'):
         },
     }
 
-    # Applica la configurazione
+    # Apply the logging configuration.
     logging.config.dictConfig(log_config)
     return logging.getLogger(__name__)
 
 def get_parsers(logger: Logger,config_file='config.ini'):
     """Dynamically load and return all parser instances."""
-    # read config.ini
-
     if not os.path.exists(config_file):
         raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
     
@@ -89,27 +85,25 @@ def get_parsers(logger: Logger,config_file='config.ini'):
 
     parsers=[]
 
-    # Itera su tutti i file .py nella cartella
+    # Iterate over all Python files in the parser folder.
     for file in parsers_folder.glob("*.py"):
         if file.name == "__init__.py":
-            continue  # Salta il file __init__.py
+            continue  # Skip the package initializer.
 
-        # module name
         module_name = file.stem
 
         try:
-            # Importa dinamicamente il modulo
+            # Import the parser module dynamically.
             module = importlib.import_module(f"{config['parsers']['folder']}.{module_name}")
 
-            # Itera su tutti gli oggetti nel modulo
+            # Inspect the objects defined in the module.
             for name, obj in inspect.getmembers(module):
-                # Controlla se l'oggetto è una classe e se eredita da DocumentParser
                 if (
                     inspect.isclass(obj)
                     and issubclass(obj, DocumentParser)
-                    and obj != DocumentParser  # Esclude la classe base
+                    and obj != DocumentParser  # Exclude the base class.
                 ):
-                    # Istanzia la classe e aggiungi alla lista
+                    # Instantiate the parser and add it to the list.
                     instance = obj()
                     parsers.append(instance)
                     logger.debug(f"Loaded instance of {obj.__name__}")
@@ -124,7 +118,6 @@ def get_parsers(logger: Logger,config_file='config.ini'):
 
 def main(logger: Logger,config_file='config.ini'):
     """Main entry point for the application."""
-    # read config.ini
     try:
         if not os.path.exists(config_file):
             raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
@@ -144,7 +137,6 @@ def main(logger: Logger,config_file='config.ini'):
             if (cmd == "h"):
                 UI.print_menu()
             if (cmd == "1"):
-                # Add a folder to the document index.
                 try:
                     folder=UI.ask_folder()
                     if not os.path.exists(folder):
@@ -156,7 +148,6 @@ def main(logger: Logger,config_file='config.ini'):
                 except Exception as e:
                     logger.error(f"Error when adding folder: {e}")
             if (cmd == "2"):
-                # Search documents using a keyword provided by the user.
                 try:
                     search=UI.ask_keyword()
                     results=index.search(search)
@@ -167,14 +158,12 @@ def main(logger: Logger,config_file='config.ini'):
                 except Exception as e:
                     logger.error(f"Error when searching: {e}")
             if (cmd == "3"):
-                # Info on index documents
                 try:
                     index.print_stats()
                     index.view_all()
                 except Exception as e:
                     logger.error(f"Error when viewing all documents: {e}")
             if (cmd == "4"):
-                # Remove a folder from the document index. Asks the user to specify the folder and handles any errors.
                 try:
                     folder_to_delete=UI.ask_folder()
                     index.remove_folder(folder_to_delete)
@@ -184,21 +173,18 @@ def main(logger: Logger,config_file='config.ini'):
                 except Exception as e:
                     logger.error(f"Error when removing folder: {e}")
             if (cmd == "5"):
-                # Update the document index by reprocessing all folders currently in the index.
                 try:
                     index.update_index(parsers)
                     index.print_stats()
                 except Exception as e:
                     logger.error(f"Error when updating index: {e}")
             if (cmd == "6"):
-                # Save the document index to disk.
                 try:
                     index.save_index()
                     index.print_stats()
                 except Exception as e:
                     logger.error(f"Error when saving index: {e}")
             if (cmd == "7"):
-                # Completely empty the document index.
                 try:
                     index.empty_index()
                     index.print_stats()

@@ -28,7 +28,7 @@ class CSVParser(DocumentParser):
             with open(file_path, 'r', encoding='utf-8') as file:
                 CSV_reader = csv.reader(file)
 
-                # Reead line by line
+                # Read the file row by row.
                 for row in CSV_reader:
                     content += ",".join(row) + "\n"
 

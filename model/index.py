@@ -33,27 +33,22 @@ class DocumentIndex:
         self.errors = []
         
         if not os.path.exists(file_path):
-            # if not exists, create new index
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump([], f)
             self.logger.debug(f"File '{file_path}' not found. New index file created.")
         else:
-            # if exists, load data
             with open(file_path, 'r', encoding='utf-8') as f:
                 index = json.load(f)
             
-            # json to Documents
             self.documents = [Document.from_dict(d) for d in index]
             self.logger.debug(f"Loaded {len(self.documents)} documents from JSON file.")
             self.total_documents = len(self.documents)
 
         if not os.path.exists(inverted_file_path):
-            # if not exists, create new index
             with open(inverted_file_path, 'w', encoding='utf-8') as f:
                 json.dump({}, f)
             self.logger.debug(f"File '{inverted_file_path}' not found. New inverted index file created.")
         else:
-            # if exists, load data
             with open(inverted_file_path, 'r', encoding='utf-8') as f:
                 self.inverted_index = defaultdict(list, json.load(f))
             self.logger.debug(f"Loaded inverted index JSON file.")        
@@ -103,7 +98,7 @@ class DocumentIndex:
         .replace(")", " ")
         )
 
-        # Rimuovi spazi doppi usando espressioni regolari
+        # Collapse repeated whitespace.
         cleaned_title = re.sub(r'\s+', ' ', normalized_title).strip()
 
         self.logger.debug(f"Testo originale: {title}")
@@ -139,7 +134,7 @@ class DocumentIndex:
                                 modification_timestamp = os.path.getmtime(os.path.join(root,file))
                                 modification_time = datetime.datetime.fromtimestamp(modification_timestamp)
                                 words = re.findall(r'\b\w+\b', title.lower()+" "+content.lower())
-                                # Populate inverted index
+                                # Add each document ID to the terms it contains.
                                 for word in words:
                                     if doc_id not in self.inverted_index[word]:
                                         self.inverted_index[word].append(doc_id)
@@ -194,19 +189,18 @@ class DocumentIndex:
         if not self.inverted_index:
             raise InvertedIndexException("Inverted index is empty.")
 
-        # Calcolate scores
+        # Calculate a score for each matching document.
         for word in words:
             if word in self.inverted_index:
-                # for every matching word add 1 to score
+                # Add one point for each matching word.
                 for doc_id in self.inverted_index[word]:
                     doc_scores[doc_id] += 1
             else:
                 self.logger.debug(f"Word '{word}' not found in inverted index.")
 
-        # order documents for score descending
+        # Sort documents by descending score.
         sorted_docs = sorted(doc_scores.items(), key=lambda x: x, reverse=True)
 
-        #get doc_ids
         doc_id_to_doc = {doc.doc_id: doc for doc in self.documents}
 
         results = []
@@ -225,7 +219,7 @@ class DocumentIndex:
         """
         with open(self.file_path, 'w', encoding='utf-8') as f:
             json.dump([document.to_dict() for document in self.documents], f)
-        # Save inverted index
+        # Save the inverted index.
         with open(self.inverted_file_path, "w") as f:
             json.dump(dict(self.inverted_index), f)
 
@@ -242,12 +236,12 @@ class DocumentIndex:
         """
         start_len=len(self.documents)
 
-        # Filter list for path to remove
+        # Keep only documents outside the folder being removed.
         self.documents[:] = [doc for doc in self.documents if doc.folder != folder]
         self.index[:] = [r for r in self.index if r["folder"] != folder]
         doc_id_to_doc = {doc.doc_id: doc for doc in self.documents}
 
-        # Remove entries from inverted index related to the folder
+        # Remove inverted-index entries for documents no longer in the index.
         for word in list(self.inverted_index.keys()):
             self.inverted_index[word] = [doc_id for doc_id in self.inverted_index[word] if doc_id in doc_id_to_doc]
             if not self.inverted_index[word]:
@@ -289,7 +283,7 @@ class DocumentIndex:
         Args:
             parsers (list[DocumentParser]): List of parser instances to use for parsing documents.
         """
-        #get all folders
+        # Collect each indexed folder once before rebuilding the index.
         folders=[]
         for document in self.documents:
             if document.folder not in folders:
@@ -304,7 +298,7 @@ class DocumentIndex:
         """
         print(f"Total documents: {self.total_documents}")
         print(f"Total errors: {len(self.errors)}")
-        # count documents for each extension
+        # Count documents by extension.
         ext_count = defaultdict(int)
         print(f"Extension\tCount")
         for doc in self.documents:
