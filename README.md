@@ -1,58 +1,57 @@
-# Parser documenti - knowledge base
+# Document Parser - Knowledge Base
 
-Applicazione Python da riga di comando per indicizzare documenti presenti in una
-cartella e costruire una piccola knowledge base locale. Per ogni documento il
-progetto raccoglie contenuto e metadati e rende
-possibile una ricerca testuale sull'indice.
+A Python command-line application for indexing documents in a folder and building
+a small local knowledge base. For each document, the application stores its
+content and metadata, making it possible to search the index by text.
 
-## Funzionalita
+## Features
 
-- scansione di una cartella e delle sue sottocartelle;
-- estrazione del contenuto tramite parser specializzati;
-- raccolta di titolo, percorso, dimensione, data di modifica e numero di parole;
-- ricerca testuale con risultati ordinati in base alla corrispondenza;
-- persistenza dell'indice in file JSON;
-- aggiornamento, rimozione e svuotamento dell'indice tramite menu interattivo;
-- caricamento dinamico dei parser presenti nella cartella `parser/`.
+- scans a folder and its subfolders;
+- extracts content using specialized parsers;
+- collects each document's title, path, size, modification date, and word count;
+- searches document text and sorts results by relevance;
+- stores the index in JSON files;
+- updates, removes, and clears the index through an interactive menu;
+- dynamically loads parsers from the `parser/` folder.
 
-## Requisiti
+## Requirements
 
 - Python 3.9 o superiore;
-- Il progetto utilizza principalmente libreria standard;
-- La libreria 'chardet' permette di identificare automaticamente la codifica dei file.  
+- The project primarily uses the Python standard library;
+- The `chardet` library automatically detects file encodings.
 
-## Avvio
+## Getting Started
 
-Dalla directory principale del progetto eseguire:
+From the project root, run:
 
 ```bash
 python main.py
 ```
 
-All'avvio viene mostrato un menu interattivo. Le operazioni disponibili sono:
+An interactive menu appears at startup. The available commands are:
 
-| Comando | Operazione |
+| Command | Operation |
 | --- | --- |
-| `h` | Mostra nuovamente il menu |
-| `1` | Indicizza una nuova cartella |
-| `2` | Cerca una parola o una frase nell'indice |
-| `3` | Visualizza tutti i file indicizzati |
-| `4` | Rimuove una cartella dall'indice |
-| `5` | Aggiorna l'indice |
-| `6` | Salva l'indice su disco |
-| `7` | Svuota l'indice |
-| `8` | Esce dall'applicazione |
+| `h` | Show the menu again |
+| `1` | Index a new folder |
+| `2` | Search the index for a word or phrase |
+| `3` | View all indexed files |
+| `4` | Remove a folder from the index |
+| `5` | Update the index |
+| `6` | Save the index to disk |
+| `7` | Clear the index |
+| `8` | Exit the application |
 
-Esempio di utilizzo:
+Example usage:
 
-1. avviare `python main.py`;
-2. scegliere `1`;
-3. inserire il percorso della cartella da indicizzare;
-4. scegliere `2` e inserire i termini da cercare.
+1. Run `python main.py`.
+2. Choose `1`.
+3. Enter the path to the folder you want to index.
+4. Choose `2` and enter the search terms.
 
-## Configurazione
+## Configuration
 
-La configurazione si trova in `config.ini`:
+Configuration is stored in `config.ini`:
 
 ```ini
 [parsers]
@@ -67,26 +66,26 @@ level = DEBUG
 file = log/indexer.log
 ```
 
-Le chiavi principali sono:
+The main keys are:
 
-- `parsers.folder`: directory da cui caricare dinamicamente i parser;
-- `index.index`: file JSON che contiene i documenti indicizzati;
-- `index.inverted_index`: file JSON usato per la ricerca per parole;
-- `logging.file`: file di log dell'applicazione;
-- `logging.level`: livello di logging, ad esempio `DEBUG`, `INFO` o `WARNING`.
+- `parsers.folder`: directory from which parsers are dynamically loaded;
+- `index.index`: JSON file containing the indexed documents;
+- `index.inverted_index`: JSON file used for word-based searches;
+- `logging.file`: application log file;
+- `logging.level`: logging level, such as `DEBUG`, `INFO`, or `WARNING`.
 
-I file `index.json`, `inverted_index.json` e `log/indexer.log` vengono creati o
-aggiornati durante l'esecuzione e non devono essere modificati manualmente.
+The `index.json`, `inverted_index.json`, and `log/indexer.log` files are created
+or updated when the application runs and should not be edited manually.
 
-## Parser
+## Parsers
 
-La directory `parser/` contiene le implementazioni basate su
-`model.parser.DocumentParser`. Attualmente sono presenti parser per:
+The `parser/` directory contains implementations based on
+`model.parser.DocumentParser`. The available parsers support:
 
-- file di testo `.txt`;
-- file Markdown `.md`;
-- file CSV/TSV tramite `CSVParser`.
+- `.txt` text files;
+- `.md` Markdown files;
+- CSV/TSV files through `CSVParser`.
 
-Per aggiungere un nuovo formato, creare un modulo Python in `parser/`, definire
-una classe che erediti da `DocumentParser`, impostare l'estensione supportata e
-implementare il metodo `parse`.
+To add support for another format, create a Python module in `parser/`, define a
+class that inherits from `DocumentParser`, set the supported extension, and
+implement the `parse` method.
