@@ -224,7 +224,7 @@ class DocumentIndex:
         Save the main index and the inverted index to their respective files.
         """
         with open(self.file_path, 'w', encoding='utf-8') as f:
-            json.dump(self.index, f)
+            json.dump([document.to_dict() for document in self.documents], f)
         # Save inverted index
         with open(self.inverted_file_path, "w") as f:
             json.dump(dict(self.inverted_index), f)

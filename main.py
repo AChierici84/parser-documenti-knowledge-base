@@ -27,16 +27,18 @@ commandList={
 def setup_logging(config_file='config.ini'):
     """Setup logging configuration from config file."""
 
-    #create folder for the log file if it doesn't exist
-    if not os.path.exists(os.path.dirname(config['logging']['file'])):
-        os.makedirs(os.path.dirname(config['logging']['file']), exist_ok=True)
+
 
     if not os.path.exists(config_file):
         raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
     
     # read config.ini
     config = configparser.ConfigParser(interpolation=None)
-    config.read(config_file)
+    config.read(config_file)    
+    
+    #create folder for the log file if it doesn't exist
+    if not os.path.exists(os.path.dirname(config['logging']['file'])):
+        os.makedirs(os.path.dirname(config['logging']['file']), exist_ok=True)
 
     # construct log config
     log_config = {
