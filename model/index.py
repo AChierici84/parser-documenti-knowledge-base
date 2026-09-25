@@ -139,7 +139,7 @@ class DocumentIndex:
                                 modification_timestamp = os.path.getmtime(os.path.join(root,file))
                                 modification_time = datetime.datetime.fromtimestamp(modification_timestamp)
                                 words = re.findall(r'\b\w+\b', title.lower()+" "+content.lower())
-                                # Popola l'inverted index
+                                # Populate inverted index
                                 for word in words:
                                     if doc_id not in self.inverted_index[word]:
                                         self.inverted_index[word].append(doc_id)

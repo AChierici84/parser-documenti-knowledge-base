@@ -4,20 +4,23 @@ class UIUtility:
   """
   def __init__(self,list_action):
     """
-    init UIUtility
+    Initialize the UIUtility with a list of actions.
+
+    Args:
+        list_action (dict): A dictionary containing action keys and their corresponding descriptions.
     """
     self.list_action = list_action
   def print_menu(self):
     """
-    Print menu
+    Print the menu in the UI.
     """
-    print("Seleziona l'operazione desiderata:")
+    print("Select an action:")
     for key in self.list_action.keys():
       print(f"[{key}] {self.list_action[key]}")
 
   def print_separator(self):
     """
-    Print a separator line in the UI.
+    Print a separator line in the UI for better readability.
     """
     print("/***********************************************************************************/")
 
@@ -31,7 +34,7 @@ class UIUtility:
 
   def print_intro(self):
     """
-    Print intro
+    Print the introduction message in the UI.
     """
     self.print_welcome()
     self.print_menu()
@@ -41,7 +44,7 @@ class UIUtility:
 
   def new_command(self):
     """
-    Print new commmand prompt
+    Print the new command prompt in the UI.
     """
     self.print_menu()
     self.print_separator()
@@ -50,24 +53,24 @@ class UIUtility:
 
   def ask_folder(self):
     """
-    ask path of the folder to index
+    Ask for the path of the folder to index.
     """
     path=input("Insert path of the folder to index: ")
     return path
 
   def ask_keyword(self):
     """
-    ask string to search
+    Ask for the string to search.
     """
     search=input("Insert string to search: ")
     return search
 
   def validator_command(self,cmd):
     """
-    Method validating command
+    Validate the given command.
     """
     while (cmd not in self.list_action.keys()):
-      print("Command non valid")
+      print("Invalid command")
       cmd=input("Insert your command: ")
 
     print("Action selected:",self.list_action[cmd])
@@ -78,6 +81,6 @@ class UIUtility:
 
   def print_bye(self):
     """
-    Method that say bye
+    Print a goodbye message.
     """
     print("Goodbye!!")

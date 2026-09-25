@@ -116,9 +116,9 @@ def get_parsers(logger: Logger,config_file='config.ini'):
                     
 
         except ImportError as e:
-            logger.error(f"Errore when importing {module_name}: {e}")
+            logger.error(f"Error when importing {module_name}: {e}")
         except Exception as e:
-            logger.error(f"Errore when processing {module_name}: {e}")
+            logger.error(f"Error when processing {module_name}: {e}")
 
     return parsers
 
@@ -144,7 +144,7 @@ def main(logger: Logger,config_file='config.ini'):
             if (cmd == "h"):
                 UI.print_menu()
             if (cmd == "1"):
-                # Aggiungi una cartella all'indice dei documenti. Chiede all'utente di specificare la cartella e gestisce eventuali errori.
+                # Add a folder to the document index.
                 try:
                     folder=UI.ask_folder()
                     if not os.path.exists(folder):
@@ -152,53 +152,53 @@ def main(logger: Logger,config_file='config.ini'):
                     index.add_folder(folder, parsers)
                     index.print_stats()
                 except FolderNotFoundException as e:
-                    logger.error(f"Errore when adding folder: {e}")
+                    logger.error(f"Error when adding folder: {e}")
                 except Exception as e:
-                    logger.error(f"Errore when adding folder: {e}")
+                    logger.error(f"Error when adding folder: {e}")
             if (cmd == "2"):
-                # Cerca documenti nell'indice dei documenti utilizzando una parola chiave fornita dall'utente.
+                # Search documents using a keyword provided by the user.
                 try:
                     search=UI.ask_keyword()
                     results=index.search(search)
                     for result in results:
                         print(f"{result[0]} Score: {result[1]}")
                 except InvertedIndexException as e:
-                    logger.error(f"Errore with inverted index: {e}")
+                    logger.error(f"Error with inverted index: {e}")
                 except Exception as e:
-                    logger.error(f"Errore when searching: {e}")
+                    logger.error(f"Error when searching: {e}")
             if (cmd == "3"):
-                # Visualizza tutte le informazioni sull'indice dei documenti.
+                # Info on index documents
                 try:
                     index.print_stats()
                     index.view_all()
                 except Exception as e:
-                    logger.error(f"Errore when viewing all documents: {e}")
+                    logger.error(f"Error when viewing all documents: {e}")
             if (cmd == "4"):
-                # Rimuovi una cartella dall'indice dei documenti. Chiede all'utente di specificare la cartella e gestisce eventuali errori.
+                # Remove a folder from the document index. Asks the user to specify the folder and handles any errors.
                 try:
                     folder_to_delete=UI.ask_folder()
                     index.remove_folder(folder_to_delete)
                     index.print_stats()
                 except FolderNotFoundException as e:
-                    logger.error(f"Errore when removing folder: {e}")
+                    logger.error(f"Error when removing folder: {e}")
                 except Exception as e:
-                    logger.error(f"Errore when removing folder: {e}")
+                    logger.error(f"Error when removing folder: {e}")
             if (cmd == "5"):
-                # Aggiorna l'indice dei documenti rielaborando tutte le cartelle presenti nell'indice.
+                # Update the document index by reprocessing all folders currently in the index.
                 try:
                     index.update_index(parsers)
                     index.print_stats()
                 except Exception as e:
-                    logger.error(f"Errore when updating index: {e}")
+                    logger.error(f"Error when updating index: {e}")
             if (cmd == "6"):
-                # Salva l'indice dei documenti su disco.
+                # Save the document index to disk.
                 try:
                     index.save_index()
                     index.print_stats()
                 except Exception as e:
-                    logger.error(f"Errore when saving index: {e}")
+                    logger.error(f"Error when saving index: {e}")
             if (cmd == "7"):
-                # Svuota completamente l'indice dei documenti.
+                # Completely empty the document index.
                 try:
                     index.empty_index()
                     index.print_stats()
@@ -206,10 +206,10 @@ def main(logger: Logger,config_file='config.ini'):
                     logger.error(f"Errore when emptying index: {e}")
             cmd = UI.validator_command(UI.new_command())
     except configparser.Error as e:
-        logger.error(f"Errore in lettura del file di configurazione: {e}")
+        logger.error(f"Error reading the configuration file: {e}")
         raise e
     except Exception as e:
-        logger.error(f"Errore in main: {e}")
+        logger.error(f"Unexpected error in main: {e}")
         raise e
     UI.print_bye()
     pass
