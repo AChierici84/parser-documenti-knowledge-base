@@ -5,7 +5,7 @@ import importlib
 import inspect
 import logging.config
 import configparser
-from model.custom_exceptions import FolderNotFoundException, InvertedIndexException
+from model.custom_exceptions import FileNotFoundException, FolderNotFoundException, InvertedIndexException
 from model.index import DocumentIndex
 from model.parser import DocumentParser
 from utils.UIUtility import UIUtility
@@ -38,7 +38,7 @@ def setup_logging(config_file=None):
     """Setup logging configuration from config file."""
     config_file = resolve_config_file(config_file)
     if not os.path.exists(config_file):
-        raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
+        raise FileNotFoundException(f"Configuration file '{config_file}' not found.")
     
     config = configparser.ConfigParser(interpolation=None)
     config.read(config_file)    
@@ -83,7 +83,7 @@ def get_parsers(logger: Logger, config_file=None):
     """Dynamically load and return all parser instances."""
     config_file = resolve_config_file(config_file)
     if not os.path.exists(config_file):
-        raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
+        raise FileNotFoundException(f"Configuration file '{config_file}' not found.")
     
     config = configparser.ConfigParser()
     config.read(config_file)
@@ -132,7 +132,7 @@ def main(logger: Logger, config_file=None):
     config_file = resolve_config_file(config_file)
     try:
         if not os.path.exists(config_file):
-            raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
+            raise FileNotFoundException(f"Configuration file '{config_file}' not found.")
         
         config = configparser.ConfigParser()
         config.read(config_file)

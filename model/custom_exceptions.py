@@ -6,20 +6,12 @@ class MissingParserException(Exception):
     """Exception raised when a required parser is missing."""
     pass
 
-class UnsupportedFileFormatException(Exception):
-    """Exception raised for unsupported file formats."""
-    pass
-
 class FileNotFoundException(Exception):
     """Exception raised when a file is not found."""
     pass
 
 class IndexingException(Exception):
     """Exception raised for errors encountered during indexing."""
-    pass
-
-class DuplicateFileException(Exception):
-    """Exception raised when a duplicate file is encountered."""
     pass
 
 class DuplicateDocumentException(Exception):
