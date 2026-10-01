@@ -24,11 +24,19 @@ commandList={
   }
 
 
-def setup_logging(config_file='config.ini'):
+def resolve_config_file(config_file=None):
+    if config_file is not None:
+        return Path(config_file)
+
+    local_config = Path('config.ini')
+    if local_config.is_file():
+        return local_config
+    return Path(__file__).resolve().parent / 'model' / 'default_config.ini'
+
+
+def setup_logging(config_file=None):
     """Setup logging configuration from config file."""
-
-
-
+    config_file = resolve_config_file(config_file)
     if not os.path.exists(config_file):
         raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
     
@@ -71,15 +79,18 @@ def setup_logging(config_file='config.ini'):
     logging.config.dictConfig(log_config)
     return logging.getLogger(__name__)
 
-def get_parsers(logger: Logger,config_file='config.ini'):
+def get_parsers(logger: Logger, config_file=None):
     """Dynamically load and return all parser instances."""
+    config_file = resolve_config_file(config_file)
     if not os.path.exists(config_file):
         raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
     
     config = configparser.ConfigParser()
     config.read(config_file)
 
-    parsers_folder= Path(config['parsers']['folder'])
+    parsers_folder = Path(config['parsers']['folder'])
+    if not parsers_folder.is_absolute() and not parsers_folder.exists():
+        parsers_folder = Path(__file__).resolve().parent / parsers_folder
     if not parsers_folder.exists():
         raise FileNotFoundError(f"Parsers folder '{parsers_folder}' not found.")
 
@@ -116,8 +127,9 @@ def get_parsers(logger: Logger,config_file='config.ini'):
 
     return parsers
 
-def main(logger: Logger,config_file='config.ini'):
+def main(logger: Logger, config_file=None):
     """Main entry point for the application."""
+    config_file = resolve_config_file(config_file)
     try:
         if not os.path.exists(config_file):
             raise FileNotFoundError(f"Configuration file '{config_file}' not found.")
@@ -126,7 +138,7 @@ def main(logger: Logger,config_file='config.ini'):
         config.read(config_file)
 
         index=DocumentIndex(config['index']['index'],config['index']['inverted_index'],logger)
-        parsers =get_parsers(logger)
+        parsers = get_parsers(logger, config_file)
 
         UI=UIUtility(commandList)
 
@@ -200,7 +212,10 @@ def main(logger: Logger,config_file='config.ini'):
     UI.print_bye()
     pass
 
-if __name__ == "__main__":
-    """Main entry point for the application."""
+def cli():
     logger = setup_logging()
     main(logger)
+
+
+if __name__ == "__main__":
+    cli()

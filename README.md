@@ -22,7 +22,20 @@ content and metadata, making it possible to search the index by text.
 
 ## Getting Started
 
-From the project root, run:
+Install the project from its root directory:
+
+```bash
+python -m pip install .
+```
+
+Then start the installed command-line application:
+
+```bash
+document-knowledge-base
+```
+
+For development, install it in editable mode with `python -m pip install -e .`.
+The existing direct launch remains available:
 
 ```bash
 python main.py
