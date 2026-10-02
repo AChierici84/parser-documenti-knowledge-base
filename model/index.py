@@ -241,6 +241,9 @@ class DocumentIndex:
         self.index[:] = [r for r in self.index if r["folder"] != folder]
         doc_id_to_doc = {doc.doc_id: doc for doc in self.documents}
 
+        # Update count of total documents.
+        self.total_documents = len(self.documents)
+
         # Remove inverted-index entries for documents no longer in the index.
         for word in list(self.inverted_index.keys()):
             self.inverted_index[word] = [doc_id for doc_id in self.inverted_index[word] if doc_id in doc_id_to_doc]
